@@ -1,9 +1,16 @@
-
+"use client"
 
 import './globals.css'
 import { demoWeather } from "@/lib/weather";
+import SearchBar from "@/components/Searchbar"
+import { useState } from 'react';
 
 export default function Home() {
+  const[setCity]=useState("")
+  function handleSearch(searchCity){
+    setCity(searchCity);
+    
+  }
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-6 text-white sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-6xl">
@@ -29,27 +36,7 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Search */}
-        <section className="mb-6">
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="relative flex-1">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400">
-                🔍
-              </span>
-
-              <input
-                type="text"
-                placeholder="Search for a city..."
-                className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 pl-12 pr-4 text-white outline-none backdrop-blur-md transition placeholder:text-slate-500 focus:border-blue-500 focus:bg-white/10"
-              />
-            </div>
-
-            <button className="h-14 rounded-2xl bg-blue-600 px-7 font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-500 active:scale-[0.98] sm:w-auto">
-              Search
-            </button>
-          </div>
-        </section>
-
+       <SearchBar onSearch={handleSearch}/>
         {/* Main Weather Card */}
         <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 p-6 shadow-2xl shadow-blue-950/30 sm:p-8 lg:p-10">
 
