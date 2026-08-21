@@ -1,42 +1,85 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 
+export default function SearchBar({ onSearch }) {
+  const [query, setQuery] = useState("");
 
+  function handleSubmit(event) {
+    event.preventDefault();
 
-export default function SearchBar({onSearch}){
-    const[query,setQuery]=useState("")
-    function handleSubmit(e){
-        e.preventDefault();
-if(!query.trim()){
-    return;
-}
+    const city = query.trim();
 
-onSearch=(query)
-
-
+    if (!city) {
+      return;
     }
-    return(
-        <form onSubmit={handleSubmit} className="mb-6">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400">
-              🔍
-            </span>
 
-            <input
-              type="text"
-              value={query}
-              onChange={(e)=>setQuery(e.target.value)}
-              placeholder="Search for a city..."
-              className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 pl-12 pr-4 text-white outline-none backdrop-blur-md transition placeholder:text-slate-500 focus:border-blue-500 focus:bg-white/10"
-            />
-          </div>
+    onSearch(city);
+  }
 
-          <button type="submit" onClick={handleSubmit} className="h-14 rounded-2xl bg-blue-600 px-7 font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-500 active:scale-[0.98] sm:w-auto">
-            Search
-          </button>
-        </div>
-      </form>
-    )
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex w-full flex-col gap-3 sm:flex-row"
+    >
+      <div className="relative flex-1">
+        {/* Search icon */}
+        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-400">
+          🔍
+        </span>
+
+        <label htmlFor="city-search" className="sr-only">
+          Search for a city
+        </label>
+
+        <input
+          id="city-search"
+          type="text"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search for a city..."
+          autoComplete="off"
+          className="
+            h-14
+            w-full
+            rounded-2xl
+            border
+            border-slate-200
+            bg-white
+            pl-12
+            pr-5
+            text-base
+            text-slate-800
+            shadow-sm
+            outline-none
+            transition
+            placeholder:text-slate-400
+            focus:border-blue-500
+            focus:ring-4
+            focus:ring-blue-100
+          "
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="
+          h-14
+          rounded-2xl
+          bg-blue-600
+          px-7
+          font-semibold
+          text-white
+          shadow-lg
+          shadow-blue-600/20
+          transition
+          hover:bg-blue-700
+          active:scale-[0.98]
+          sm:min-w-32
+        "
+      >
+        Search
+      </button>
+    </form>
+  );
 }
