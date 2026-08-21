@@ -4,297 +4,150 @@ import { useState } from "react";
 import SearchBar from "@/components/Searchbar";
 import CurrentWeather from "@/components/CurrentWeather";
 
-const demoWeather = {
-  city: "Kabul",
-  country: "Afghanistan",
-  date: "Friday, August 21, 2026",
-  temperature: 27,
-  feelsLike: 28,
-  condition: "Sunny",
-  icon: "☀️",
-  description: "Clear skies with plenty of sunshine.",
-  humidity: 32,
-  wind: 8,
-  pressure: 1015,
-  visibility: 10,
-};
-
 export default function Home() {
-  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleSearch(searchCity) {
-    setCity(searchCity);
+  async function handleSearch(city) {
+    if (!city.trim()) return;
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(
+        `/api/weather?city=${encodeURIComponent(city.trim())}`
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to get weather");
+      }
+
+      setWeather(data);
+    } catch (err) {
+      setWeather(null);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const weather = {
-    ...demoWeather,
-    city: city || demoWeather.city,
-  };
-
   return (
-    <main
-      className="
-        min-h-screen
-        bg-gradient-to-br
-        from-blue-50
-        via-white
-        to-sky-100
-        px-4
-        py-8
-        sm:px-6
-        lg:px-8
-      "
-    >
-      <div className="mx-auto w-full max-w-6xl">
+    <main className="min-h-screen bg-[#070b14] px-4 py-6 text-white sm:px-6 lg:px-10 lg:py-10">
+      <div className="mx-auto max-w-7xl">
+        <header className="mb-8 flex flex-col gap-6 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-300/20">
+                <span className="text-xl">◉</span>
+              </div>
 
-        {/* Header */}
-        <header className="mb-8">
-          <p
-            className="
-              mb-2
-              text-xs
-              font-bold
-              tracking-[0.2em]
-              text-blue-600
-            "
-          >
-            WEATHER DASHBOARD
-          </p>
+              <span className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                Weather
+              </span>
+            </div>
 
-          <h1
-            className="
-              text-4xl
-              font-bold
-              tracking-tight
-              text-slate-900
-              sm:text-5xl
-              lg:text-6xl
-            "
-          >
-            Weather Today
-          </h1>
+            <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Weather, wherever you are.
+            </h1>
 
-          <p className="mt-3 max-w-xl text-slate-500">
-            Check the current weather in any city.
-          </p>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+              Search any city in the world and get current weather conditions
+              instantly.
+            </p>
+          </div>
+
+          <div className="hidden rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 lg:block">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+              Live weather
+            </p>
+            <p className="mt-1 text-sm font-medium text-slate-300">
+              Worldwide coverage
+            </p>
+          </div>
         </header>
 
-        {/* Search */}
-        <section className="mb-5">
+        <section className="mb-8">
           <SearchBar onSearch={handleSearch} />
         </section>
 
-        {/* Search message */}
-        <div className="mb-5 text-sm text-slate-500">
-          {city ? (
-            <p>
-              Showing weather for{" "}
-              <span className="font-semibold text-slate-800">
-                {city}
-              </span>
-            </p>
-          ) : (
-            <p>Search for a city to get started.</p>
-          )}
-        </div>
-
-        {/* Current Weather */}
-        <CurrentWeather weather={weather} />
-
-        {/* Hourly Preview */}
-        <section className="mt-8">
-
-          <div className="mb-4">
-            <p className="text-xs font-bold tracking-[0.2em] text-blue-600">
-              TODAY
-            </p>
-
-            <h2 className="mt-1 text-2xl font-bold text-slate-900">
-              Hourly Preview
+        {loading && (
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-10 text-center shadow-2xl shadow-black/20">
+            <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-2 border-slate-700 border-t-cyan-400" />
+            <h2 className="text-lg font-semibold text-white">
+              Getting weather
             </h2>
+            <p className="mt-2 text-sm text-slate-500">
+              Checking the latest conditions...
+            </p>
           </div>
+        )}
 
-          {/* Horizontal scroll on mobile */}
-          <div
-            className="
-              flex
-              gap-3
-              overflow-x-auto
-              pb-3
-              scrollbar-thin
-            "
-          >
-            {/* Hour 1 */}
-            <div
-              className="
-                min-w-[110px]
-                flex-1
-                rounded-2xl
-                border
-                border-slate-100
-                bg-white
-                p-4
-                text-center
-                shadow-sm
-              "
-            >
-              <p className="text-sm text-slate-500">
-                Now
-              </p>
-
-              <div className="my-3 text-3xl">
-                ☀️
-              </div>
-
-              <p className="text-xl font-bold text-slate-900">
-                27°
-              </p>
+        {!loading && error && (
+          <div className="rounded-[2rem] border border-red-400/20 bg-red-400/[0.06] p-8 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-400/10 text-2xl">
+              !
             </div>
 
-            {/* Hour 2 */}
-            <div
-              className="
-                min-w-[110px]
-                flex-1
-                rounded-2xl
-                border
-                border-slate-100
-                bg-white
-                p-4
-                text-center
-                shadow-sm
-              "
-            >
-              <p className="text-sm text-slate-500">
-                12 PM
-              </p>
+            <h2 className="mt-5 text-xl font-semibold text-white">
+              Weather unavailable
+            </h2>
 
-              <div className="my-3 text-3xl">
-                ☀️
-              </div>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
+              {error}
+            </p>
 
-              <p className="text-xl font-bold text-slate-900">
-                28°
-              </p>
-            </div>
-
-            {/* Hour 3 */}
-            <div
-              className="
-                min-w-[110px]
-                flex-1
-                rounded-2xl
-                border
-                border-slate-100
-                bg-white
-                p-4
-                text-center
-                shadow-sm
-              "
-            >
-              <p className="text-sm text-slate-500">
-                1 PM
-              </p>
-
-              <div className="my-3 text-3xl">
-                ☀️
-              </div>
-
-              <p className="text-xl font-bold text-slate-900">
-                29°
-              </p>
-            </div>
-
-            {/* Hour 4 */}
-            <div
-              className="
-                min-w-[110px]
-                flex-1
-                rounded-2xl
-                border
-                border-slate-100
-                bg-white
-                p-4
-                text-center
-                shadow-sm
-              "
-            >
-              <p className="text-sm text-slate-500">
-                2 PM
-              </p>
-
-              <div className="my-3 text-3xl">
-                🌤️
-              </div>
-
-              <p className="text-xl font-bold text-slate-900">
-                30°
-              </p>
-            </div>
-
-            {/* Hour 5 */}
-            <div
-              className="
-                min-w-[110px]
-                flex-1
-                rounded-2xl
-                border
-                border-slate-100
-                bg-white
-                p-4
-                text-center
-                shadow-sm
-              "
-            >
-              <p className="text-sm text-slate-500">
-                3 PM
-              </p>
-
-              <div className="my-3 text-3xl">
-                🌤️
-              </div>
-
-              <p className="text-xl font-bold text-slate-900">
-                30°
-              </p>
-            </div>
-
-            {/* Hour 6 */}
-            <div
-              className="
-                min-w-[110px]
-                flex-1
-                rounded-2xl
-                border
-                border-slate-100
-                bg-white
-                p-4
-                text-center
-                shadow-sm
-              "
-            >
-              <p className="text-sm text-slate-500">
-                4 PM
-              </p>
-
-              <div className="my-3 text-3xl">
-                ☀️
-              </div>
-
-              <p className="text-xl font-bold text-slate-900">
-                29°
-              </p>
-            </div>
+            <p className="mt-4 text-sm text-slate-500">
+              Try another city.
+            </p>
           </div>
-        </section>
+        )}
 
-        {/* Footer */}
-        <footer className="py-10 text-center">
-          <p className="text-sm text-slate-400">
-            Weather Dashboard • Next.js + React + Tailwind CSS
+        {!loading && !error && !weather && (
+          <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-8 shadow-2xl shadow-black/20 sm:p-12 lg:p-16">
+            <div className="mx-auto max-w-2xl text-center">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-cyan-300/10 bg-cyan-300/[0.06] text-4xl">
+                🌍
+              </div>
+
+              <h2 className="mt-7 text-2xl font-bold sm:text-3xl">
+                Explore the weather
+              </h2>
+
+              <p className="mt-3 text-sm leading-6 text-slate-400 sm:text-base">
+                Search for London, Tokyo, New York, Dubai, Kabul or any other
+                city around the world.
+              </p>
+
+              <div className="mt-8 flex flex-wrap justify-center gap-2">
+                {["London", "Tokyo", "Dubai", "New York", "Kabul"].map(
+                  (city) => (
+                    <button
+                      key={city}
+                      onClick={() => handleSearch(city)}
+                      className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-cyan-200"
+                    >
+                      {city}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {!loading && !error && weather && (
+          <CurrentWeather weather={weather} />
+        )}
+
+        <footer className="mt-10 border-t border-white/5 pt-6 text-center">
+          <p className="text-xs text-slate-600">
+            Weather Dashboard · Built with Next.js, React and Tailwind CSS
           </p>
         </footer>
-
       </div>
     </main>
   );
