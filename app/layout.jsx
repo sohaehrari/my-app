@@ -15,8 +15,9 @@ export default function LayOut({children}){
   return(
     <html>
       <body>
-        <Footer/>
 <main>{children}</main>
+<Footer/>
+
       </body>
     </html>
   )
