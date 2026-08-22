@@ -4,6 +4,9 @@ import { useState } from "react";
 import SearchBar from "@/components/Searchbar";
 import CurrentWeather from "@/components/CurrentWeather";
 import HourlyForcast from "@/components/HourlyForcast"
+import DailyForcast from "@/components/DailyForcast"
+
+
 
 export default function Home() {
   const [weather, setWeather] = useState(null);
@@ -59,6 +62,7 @@ export default function Home() {
               Search any city in the world and get current weather conditions
               instantly.
             </p>
+            <DailyForcast/>
           </div>
 
           <div className="hidden rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 lg:block">
