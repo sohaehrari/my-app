@@ -12,9 +12,6 @@ export async function GET(request) {
   
       const apiKey = process.env.WEATHER_API_KEY;
   
-      console.log("API key exists:", !!apiKey);
-      console.log("City:", city);
-  
       if (!apiKey) {
         return Response.json(
           { error: "API key is missing" },
@@ -22,43 +19,69 @@ export async function GET(request) {
         );
       }
   
-      const url =
+      const currentUrl =
         `https://api.openweathermap.org/data/2.5/weather` +
         `?q=${encodeURIComponent(city)}` +
         `&appid=${apiKey}` +
         `&units=metric`;
   
-      const response = await fetch(url);
+      const currentResponse = await fetch(currentUrl);
+      const currentData = await currentResponse.json();
   
-      console.log("OpenWeather status:", response.status);
-  
-      const data = await response.json();
-  
-      console.log("OpenWeather response:", data);
-  
-      if (!response.ok) {
+      if (!currentResponse.ok) {
         return Response.json(
           {
-            error: data.message || "OpenWeather request failed",
+            error: currentData.message || "Unable to find city",
           },
           {
-            status: response.status,
+            status: currentResponse.status,
+          }
+        );
+      }
+  
+      const { lat, lon } = currentData.coord;
+  
+      const forecastUrl =
+        `https://api.openweathermap.org/data/2.5/forecast` +
+        `?lat=${lat}` +
+        `&lon=${lon}` +
+        `&appid=${apiKey}` +
+        `&units=metric`;
+  
+      const forecastResponse = await fetch(forecastUrl);
+      const forecastData = await forecastResponse.json();
+  
+      if (!forecastResponse.ok) {
+        return Response.json(
+          {
+            error: forecastData.message || "Unable to get forecast",
+          },
+          {
+            status: forecastResponse.status,
           }
         );
       }
   
       const weather = {
-        city: data.name,
-        country: data.sys.country,
-        temperature: Math.round(data.main.temp),
-        feelsLike: Math.round(data.main.feels_like),
-        condition: data.weather[0].main,
-        description: data.weather[0].description,
-        icon: data.weather[0].icon,
-        humidity: data.main.humidity,
-        wind: Math.round(data.wind.speed * 3.6),
-        pressure: data.main.pressure,
-        visibility: Math.round(data.visibility / 1000),
+        city: currentData.name,
+        country: currentData.sys.country,
+        temperature: Math.round(currentData.main.temp),
+        feelsLike: Math.round(currentData.main.feels_like),
+        condition: currentData.weather[0].main,
+        description: currentData.weather[0].description,
+        icon: currentData.weather[0].icon,
+        humidity: currentData.main.humidity,
+        wind: Math.round(currentData.wind.speed * 3.6),
+        pressure: currentData.main.pressure,
+        visibility: Math.round(currentData.visibility / 1000),
+  
+        hourly: forecastData.list.slice(0, 8).map((item) => ({
+          time: item.dt * 1000,
+          temperature: Math.round(item.main.temp),
+          condition: item.weather[0].main,
+          icon: item.weather[0].icon,
+          precipitation: Math.round((item.pop || 0) * 100),
+        })),
       };
   
       return Response.json(weather);

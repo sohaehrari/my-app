@@ -3,6 +3,7 @@ import "./globals.css"
 import { useState } from "react";
 import SearchBar from "@/components/Searchbar";
 import CurrentWeather from "@/components/CurrentWeather";
+import HourlyForcast from "@/components/HourlyForcast"
 
 export default function Home() {
   const [weather, setWeather] = useState(null);
@@ -139,9 +140,13 @@ export default function Home() {
           </section>
         )}
 
-        {!loading && !error && weather && (
-          <CurrentWeather weather={weather} />
-        )}
+{!loading && !error && weather && (
+  <>
+    <CurrentWeather weather={weather} />
+    <HourlyForcast hourly={weather.hourly} />
+  </>
+)}
+
 
         <footer className="mt-10 border-t border-white/5 pt-6 text-center">
           <p className="text-xs text-slate-600">
