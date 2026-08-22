@@ -21,9 +21,9 @@ export async function GET(request) {
         );
       }
   
-      // -----------------------------
-      // DAILY FORECAST
-      // -----------------------------
+      // =====================================================
+      // FORECAST
+      // =====================================================
   
       if (type === "forecast") {
         const url =
@@ -38,33 +38,85 @@ export async function GET(request) {
   
         const data = await response.json();
   
-        console.log("FORECAST STATUS:", response.status);
-  
         if (!response.ok) {
+          console.error("OpenWeather error:", data);
+  
           return Response.json(
             {
               error:
                 data.message ||
-                "Forecast request failed",
+                "OpenWeather forecast failed",
             },
-            { status: response.status }
+            {
+              status: response.status,
+            }
           );
         }
   
-        // Group forecasts by date
-        const days = {};
+        // =====================================================
+        // HOURLY FORECAST
+        // =====================================================
+  
+        const hourly = data.list
+          .slice(0, 12)
+          .map((item) => {
+            const date = new Date(item.dt * 1000);
+  
+            return {
+              time: date.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              }),
+  
+              temperature: Math.round(
+                item.main.temp
+              ),
+  
+              feelsLike: Math.round(
+                item.main.feels_like
+              ),
+  
+              condition:
+                item.weather[0].main,
+  
+              description:
+                item.weather[0].description,
+  
+              icon:
+                item.weather[0].icon,
+  
+              humidity:
+                item.main.humidity,
+  
+              wind: Math.round(
+                item.wind.speed * 3.6
+              ),
+  
+              rainChance: Math.round(
+                (item.pop || 0) * 100
+              ),
+  
+              timestamp: item.dt,
+            };
+          });
+  
+        // =====================================================
+        // DAILY FORECAST
+        // =====================================================
+  
+        const groupedDays = {};
   
         data.list.forEach((item) => {
           const date = item.dt_txt.split(" ")[0];
   
-          if (!days[date]) {
-            days[date] = [];
+          if (!groupedDays[date]) {
+            groupedDays[date] = [];
           }
   
-          days[date].push(item);
+          groupedDays[date].push(item);
         });
   
-        const daily = Object.entries(days)
+        const daily = Object.entries(groupedDays)
           .slice(0, 5)
           .map(([date, items], index) => {
             const temperatures = items.map(
@@ -82,11 +134,15 @@ export async function GET(request) {
             const midday =
               items.find((item) =>
                 item.dt_txt.includes("12:00:00")
-              ) || items[Math.floor(items.length / 2)];
+              ) ||
+              items[
+                Math.floor(items.length / 2)
+              ];
   
             const rainChance = Math.max(
               ...items.map(
-                (item) => (item.pop || 0) * 100
+                (item) =>
+                  (item.pop || 0) * 100
               )
             );
   
@@ -98,16 +154,22 @@ export async function GET(request) {
                   ? "Today"
                   : new Date(
                       `${date}T12:00:00`
-                    ).toLocaleDateString("en-US", {
-                      weekday: "short",
-                    }),
+                    ).toLocaleDateString(
+                      "en-US",
+                      {
+                        weekday: "short",
+                      }
+                    ),
   
               dateLabel: new Date(
                 `${date}T12:00:00`
-              ).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              }),
+              ).toLocaleDateString(
+                "en-US",
+                {
+                  month: "short",
+                  day: "numeric",
+                }
+              ),
   
               high: Math.round(high),
   
@@ -117,7 +179,8 @@ export async function GET(request) {
                 midday.weather[0].main,
   
               description:
-                midday.weather[0].description,
+                midday.weather[0]
+                  .description,
   
               icon:
                 midday.weather[0].icon,
@@ -127,6 +190,10 @@ export async function GET(request) {
             };
           });
   
+        // =====================================================
+        // RESPONSE
+        // =====================================================
+  
         return Response.json({
           success: true,
   
@@ -134,21 +201,25 @@ export async function GET(request) {
   
           country: data.city.country,
   
+          hourly,
+  
           daily,
         });
       }
   
-      // -----------------------------
+      // =====================================================
       // CURRENT WEATHER
-      // -----------------------------
+      // =====================================================
   
-      const url =
+      const currentUrl =
         `https://api.openweathermap.org/data/2.5/weather` +
         `?q=${encodeURIComponent(city)}` +
         `&appid=${apiKey}` +
         `&units=metric`;
   
-      const response = await fetch(url);
+      const response = await fetch(currentUrl, {
+        cache: "no-store",
+      });
   
       const data = await response.json();
   
@@ -157,36 +228,55 @@ export async function GET(request) {
           {
             error:
               data.message ||
-              "Weather request failed",
+              "OpenWeather request failed",
           },
-          { status: response.status }
+          {
+            status: response.status,
+          }
         );
       }
   
       return Response.json({
         city: data.name,
+  
         country: data.sys.country,
+  
         temperature: Math.round(
           data.main.temp
         ),
+  
         feelsLike: Math.round(
           data.main.feels_like
         ),
-        condition: data.weather[0].main,
+  
+        condition:
+          data.weather[0].main,
+  
         description:
           data.weather[0].description,
-        icon: data.weather[0].icon,
-        humidity: data.main.humidity,
+  
+        icon:
+          data.weather[0].icon,
+  
+        humidity:
+          data.main.humidity,
+  
         wind: Math.round(
           data.wind.speed * 3.6
         ),
-        pressure: data.main.pressure,
+  
+        pressure:
+          data.main.pressure,
+  
         visibility: Math.round(
           data.visibility / 1000
         ),
       });
     } catch (error) {
-      console.error("WEATHER ERROR:", error);
+      console.error(
+        "WEATHER API ERROR:",
+        error
+      );
   
       return Response.json(
         {
@@ -194,7 +284,9 @@ export async function GET(request) {
             error.message ||
             "Something went wrong",
         },
-        { status: 500 }
+        {
+          status: 500,
+        }
       );
     }
   }
