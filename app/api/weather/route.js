@@ -1,23 +1,43 @@
 export async function GET(request) {
     try {
+      // =====================================================
+      // GET PARAMETERS
+      // =====================================================
+  
       const { searchParams } = new URL(request.url);
   
       const city = searchParams.get("city");
       const type = searchParams.get("type") || "current";
   
+      // =====================================================
+      // VALIDATE CITY
+      // =====================================================
+  
       if (!city) {
         return Response.json(
-          { error: "City is required" },
-          { status: 400 }
+          {
+            error: "City is required",
+          },
+          {
+            status: 400,
+          }
         );
       }
+  
+      // =====================================================
+      // API KEY
+      // =====================================================
   
       const apiKey = process.env.WEATHER_API_KEY;
   
       if (!apiKey) {
         return Response.json(
-          { error: "WEATHER_API_KEY is missing" },
-          { status: 500 }
+          {
+            error: "WEATHER_API_KEY is missing",
+          },
+          {
+            status: 500,
+          }
         );
       }
   
@@ -38,8 +58,12 @@ export async function GET(request) {
   
         const data = await response.json();
   
+        // ===================================================
+        // FORECAST ERROR
+        // ===================================================
+  
         if (!response.ok) {
-          console.error("OpenWeather error:", data);
+          console.error("OpenWeather forecast error:", data);
   
           return Response.json(
             {
@@ -60,13 +84,8 @@ export async function GET(request) {
         const hourly = data.list
           .slice(0, 12)
           .map((item) => {
-            const date = new Date(item.dt * 1000);
-  
             return {
-              time: date.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-              }),
+              time: item.dt,
   
               temperature: Math.round(
                 item.main.temp
@@ -131,6 +150,7 @@ export async function GET(request) {
               ...temperatures
             );
   
+            // Try to use 12:00 forecast
             const midday =
               items.find((item) =>
                 item.dt_txt.includes("12:00:00")
@@ -179,8 +199,7 @@ export async function GET(request) {
                 midday.weather[0].main,
   
               description:
-                midday.weather[0]
-                  .description,
+                midday.weather[0].description,
   
               icon:
                 midday.weather[0].icon,
@@ -191,7 +210,7 @@ export async function GET(request) {
           });
   
         // =====================================================
-        // RESPONSE
+        // FORECAST RESPONSE
         // =====================================================
   
         return Response.json({
@@ -223,7 +242,16 @@ export async function GET(request) {
   
       const data = await response.json();
   
+      // =====================================================
+      // CURRENT WEATHER ERROR
+      // =====================================================
+  
       if (!response.ok) {
+        console.error(
+          "OpenWeather current error:",
+          data
+        );
+  
         return Response.json(
           {
             error:
@@ -236,7 +264,13 @@ export async function GET(request) {
         );
       }
   
+      // =====================================================
+      // CURRENT WEATHER RESPONSE
+      // =====================================================
+  
       return Response.json({
+        success: true,
+  
         city: data.name,
   
         country: data.sys.country,
@@ -258,21 +292,45 @@ export async function GET(request) {
         icon:
           data.weather[0].icon,
   
+        // ===============================
+        // WEATHER DETAILS
+        // ===============================
+  
         humidity:
           data.main.humidity,
+  
+        pressure:
+          data.main.pressure,
   
         wind: Math.round(
           data.wind.speed * 3.6
         ),
   
-        pressure:
-          data.main.pressure,
+        windDirection:
+          data.wind.deg ?? null,
   
-        visibility: Math.round(
-          data.visibility / 1000
-        ),
+        clouds:
+          data.clouds?.all ?? 0,
+  
+        visibility:
+          data.visibility
+            ? Math.round(
+                data.visibility / 1000
+              )
+            : null,
+  
+        sunrise:
+          data.sys.sunrise,
+  
+        sunset:
+          data.sys.sunset,
       });
+  
     } catch (error) {
+      // =====================================================
+      // CATCH ERROR
+      // =====================================================
+  
       console.error(
         "WEATHER API ERROR:",
         error
