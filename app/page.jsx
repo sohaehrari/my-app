@@ -286,7 +286,7 @@ export default function Home() {
               <DailyForcast
                 daily={weather.daily}
               />
-              <WeatherDetails daily={weather}/>
+              <WeatherDetails weather={weather}/>
 
             </div>
           )}

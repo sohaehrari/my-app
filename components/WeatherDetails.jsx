@@ -6,7 +6,7 @@ export default function WeatherDetails({weather}){
         if(!Timestemp) {
             return null;
         }
-        return new Date(timestamp * 1000).toLocaleTimeString(
+        return new Date(Timestemp * 1000).toLocaleTimeString(
             [],
             {
               hour: "numeric",
