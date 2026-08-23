@@ -105,28 +105,31 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#070b14] px-4 py-6 text-white sm:px-6 lg:px-10 lg:py-10">
+    <main className="min-h-screen bg-[#070b14] px-4 pt-24 pb-6 text-white sm:px-6 lg:px-10 lg:pt-28 lg:pb-10">
+
       <div className="mx-auto max-w-7xl">
 
         {/* ==========================================
             HEADER
         ========================================== */}
 
-        <header className="mb-8 flex flex-col gap-6 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
+        <header className="mb-16 flex flex-col gap-6 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
 
           <div>
             {/* Logo / Label */}
             <div className="mb-4 flex items-center gap-3">
 
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-300/20">
+              <div className="flex h-3 w-3 items-center justify-center rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-300/20">
                 <span className="text-xl">
                   ◉
                 </span>
+                <span className="text-xl">
+                  Weather
+                </span>
+                
               </div>
 
-              <span className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
-                Weather
-              </span>
+             
             </div>
 
             {/* Title */}

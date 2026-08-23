@@ -13,11 +13,12 @@ export default function Navbar() {
 
           <div>
             <h1 className="text-sm font-bold text-white sm:text-base">
-              Weatherly
+            Weather Dashboard
+
             </h1>
 
             <p className="hidden text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500 sm:block">
-              Weather Dashboard
+                Weatherly
             </p>
           </div>
         </div>
