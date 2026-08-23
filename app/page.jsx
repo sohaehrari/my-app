@@ -7,6 +7,7 @@ import SearchBar from "@/components/Searchbar";
 import CurrentWeather from "@/components/CurrentWeather";
 import HourlyForcast from "@/components/HourlyForcast";
 import DailyForcast from "@/components/DailyForcast";
+import WeatherDetails from "@/components/WeatherDetails"
 
 export default function Home() {
   const [weather, setWeather] = useState(null);
@@ -285,6 +286,7 @@ export default function Home() {
               <DailyForcast
                 daily={weather.daily}
               />
+              <WeatherDetails daily={weather}/>
 
             </div>
           )}
