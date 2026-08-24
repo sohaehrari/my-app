@@ -136,7 +136,6 @@ export async function POST(request) {
   } catch (error) {
     console.error("SIGNUP_ERROR:", error);
 
-    // Handle duplicate email race condition
     if (error?.code === 11000) {
       return NextResponse.json(
         {
