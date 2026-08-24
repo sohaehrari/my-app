@@ -1,6 +1,5 @@
 "use client";
 
-import "./globals.css";
 import { useState } from "react";
 
 import SearchBar from "@/components/Searchbar";
@@ -15,7 +14,7 @@ export default function Home() {
   const [error, setError] = useState("");
 
   async function handleSearch(city) {
-    if (!city.trim()) return;
+    if (!city?.trim()) return;
 
     try {
       setLoading(true);
@@ -29,14 +28,18 @@ export default function Home() {
       // ==========================================
 
       const currentResponse = await fetch(
-        `/api/weather?city=${encodedCity}`
+        `/api/weather?city=${encodedCity}`,
+        {
+          method: "GET",
+          cache: "no-store",
+        }
       );
 
       const currentData = await currentResponse.json();
 
       if (!currentResponse.ok) {
         throw new Error(
-          currentData.error || "Unable to get current weather"
+          currentData.error || "Unable to get current weather."
         );
       }
 
@@ -45,30 +48,36 @@ export default function Home() {
       // ==========================================
 
       const forecastResponse = await fetch(
-        `/api/weather?city=${encodedCity}&type=forecast`
+        `/api/weather?city=${encodedCity}&type=forecast`,
+        {
+          method: "GET",
+          cache: "no-store",
+        }
       );
 
       const forecastData = await forecastResponse.json();
 
       if (!forecastResponse.ok) {
         throw new Error(
-          forecastData.error || "Unable to get weather forecast"
+          forecastData.error || "Unable to get weather forecast."
         );
       }
 
       // ==========================================
-      // 3. COMBINE THE DATA
+      // 3. COMBINE WEATHER DATA
       // ==========================================
 
       const completeWeather = {
         ...currentData,
-        hourly: forecastData.hourly || [],
-        daily: forecastData.daily || [],
+        hourly: Array.isArray(forecastData.hourly)
+          ? forecastData.hourly
+          : [],
+        daily: Array.isArray(forecastData.daily)
+          ? forecastData.daily
+          : [],
       };
 
       console.log("COMPLETE WEATHER:", completeWeather);
-      console.log("HOURLY:", completeWeather.hourly);
-      console.log("DAILY:", completeWeather.daily);
 
       setWeather(completeWeather);
     } catch (err) {
@@ -76,56 +85,65 @@ export default function Home() {
 
       setWeather(null);
 
-      setError(err.message || "Something went wrong");
+      setError(
+        err?.message || "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-[#070b14] px-4 pt-24 pb-6 text-white sm:px-6 lg:px-10 lg:pt-28 lg:pb-10">
+    <main className="min-h-screen bg-[#070b14] px-4 pb-8 pt-24 text-white sm:px-6 lg:px-10 lg:pb-12 lg:pt-28">
       <div className="mx-auto max-w-7xl">
 
         {/* ==========================================
-            HEADER
+            HERO HEADER
         ========================================== */}
 
-        <header className="mb-16 flex flex-col gap-6 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
-          <div>
+        <header className="mb-12 flex flex-col gap-8 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
 
-            {/* Logo / Label */}
+            {/* Small Label */}
             <div className="mb-5 flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-300/20">
-                <span className="text-xl text-cyan-300">
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10">
+                <span className="text-lg text-cyan-300">
                   ◉
                 </span>
               </div>
 
-              <span className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">
-                Weather
+              <span className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                Weather Dashboard
               </span>
             </div>
 
             {/* Title */}
-            <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Weather, wherever you are.
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Weather,
+              <span className="text-cyan-300">
+                {" "}wherever you are.
+              </span>
             </h1>
 
             {/* Description */}
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-              Search any city in the world and get current
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">
+              Search any city in the world and explore current
               weather conditions, hourly forecasts, and daily
-              forecasts.
+              forecasts in one beautiful dashboard.
             </p>
           </div>
 
-          {/* Desktop badge */}
-          <div className="hidden rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 lg:block">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-              Live weather
-            </p>
+          {/* Desktop Status Card */}
+          <div className="hidden min-w-[190px] rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 lg:block">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50" />
 
-            <p className="mt-1 text-sm font-medium text-slate-300">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+                Live weather
+              </p>
+            </div>
+
+            <p className="mt-2 text-sm font-medium text-slate-300">
               Worldwide coverage
             </p>
           </div>
@@ -144,17 +162,17 @@ export default function Home() {
         ========================================== */}
 
         {loading && (
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-10 text-center shadow-2xl shadow-black/20">
-            <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-2 border-slate-700 border-t-cyan-400" />
+          <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-10 text-center shadow-2xl shadow-black/20 sm:p-14">
+            <div className="mx-auto mb-5 h-11 w-11 animate-spin rounded-full border-2 border-slate-700 border-t-cyan-400" />
 
             <h2 className="text-lg font-semibold text-white">
-              Getting weather
+              Getting your weather
             </h2>
 
             <p className="mt-2 text-sm text-slate-500">
               Checking the latest conditions and forecast...
             </p>
-          </div>
+          </section>
         )}
 
         {/* ==========================================
@@ -162,8 +180,8 @@ export default function Home() {
         ========================================== */}
 
         {!loading && error && (
-          <div className="rounded-[2rem] border border-red-400/20 bg-red-400/[0.06] p-8 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-400/10 text-2xl text-red-300">
+          <section className="rounded-[2rem] border border-red-400/20 bg-red-400/[0.06] p-8 text-center shadow-xl shadow-black/10 sm:p-12">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-red-300/10 bg-red-400/10 text-2xl font-bold text-red-300">
               !
             </div>
 
@@ -176,9 +194,9 @@ export default function Home() {
             </p>
 
             <p className="mt-4 text-sm text-slate-500">
-              Try another city.
+              Try searching for another city.
             </p>
-          </div>
+          </section>
         )}
 
         {/* ==========================================
@@ -186,22 +204,24 @@ export default function Home() {
         ========================================== */}
 
         {!loading && !error && !weather && (
-          <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-8 shadow-2xl shadow-black/20 sm:p-12 lg:p-16">
+          <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] via-white/[0.03] to-white/[0.02] p-8 shadow-2xl shadow-black/20 sm:p-12 lg:p-16">
             <div className="mx-auto max-w-2xl text-center">
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-cyan-300/10 bg-cyan-300/[0.06] text-4xl">
+
+              {/* Globe */}
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-cyan-300/10 bg-cyan-300/[0.06] text-4xl shadow-xl shadow-cyan-950/10">
                 🌍
               </div>
 
-              <h2 className="mt-7 text-2xl font-bold sm:text-3xl">
+              <h2 className="mt-7 text-2xl font-bold tracking-tight text-white sm:text-3xl">
                 Explore the weather
               </h2>
 
-              <p className="mt-3 text-sm leading-6 text-slate-400 sm:text-base">
+              <p className="mt-3 text-sm leading-7 text-slate-400 sm:text-base">
                 Search for London, Tokyo, New York, Dubai,
-                Kabul or any other city around the world.
+                Kabul, Herat, or any other city around the world.
               </p>
 
-              {/* Quick cities */}
+              {/* Quick Cities */}
               <div className="mt-8 flex flex-wrap justify-center gap-2">
                 {[
                   "London",
@@ -213,8 +233,9 @@ export default function Home() {
                 ].map((city) => (
                   <button
                     key={city}
+                    type="button"
                     onClick={() => handleSearch(city)}
-                    className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-cyan-200"
+                    className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-slate-300 transition duration-200 hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-cyan-200 active:scale-95"
                   >
                     {city}
                   </button>
@@ -229,26 +250,27 @@ export default function Home() {
         ========================================== */}
 
         {!loading && !error && weather && (
-          <div className="space-y-5">
-            {/* Current weather */}
+          <section className="space-y-5">
+
+            {/* Current Weather */}
             <CurrentWeather weather={weather} />
 
-            {/* Hourly forecast */}
+            {/* Hourly Forecast */}
             <HourlyForcast hourly={weather.hourly} />
 
-            {/* Daily forecast */}
+            {/* Daily Forecast */}
             <DailyForcast daily={weather.daily} />
 
-            {/* Weather details */}
+            {/* Weather Details */}
             <WeatherDetails weather={weather} />
-          </div>
+          </section>
         )}
 
         {/* ==========================================
             FOOTER
         ========================================== */}
 
-        <footer className="mt-10 border-t border-white/5 pt-6 text-center">
+        <footer className="mt-12 border-t border-white/5 pt-6 text-center">
           <p className="text-xs text-slate-600">
             Weather Dashboard · Built with Next.js, React and
             Tailwind CSS
