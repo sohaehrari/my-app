@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import "./globals.css"
 import SearchBar from "@/components/Searchbar";
 import CurrentWeather from "@/components/CurrentWeather";
 import HourlyForcast from "@/components/HourlyForcast";
