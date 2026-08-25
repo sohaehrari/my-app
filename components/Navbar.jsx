@@ -45,7 +45,7 @@ export default function Navbar() {
 
       setUser(null);
 
-      window.location.href = "/signin";
+      window.location.href = "/";
     } catch (error) {
       console.error("LOGOUT ERROR:", error);
       setLoggingOut(false);
