@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     async function getUser() {
@@ -29,6 +30,27 @@ export default function Navbar() {
 
     getUser();
   }, []);
+
+  async function handleLogout() {
+    try {
+      setLoggingOut(true);
+
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+
+      setUser(null);
+
+      window.location.href = "/signin";
+    } catch (error) {
+      console.error("LOGOUT ERROR:", error);
+      setLoggingOut(false);
+    }
+  }
 
   return (
     <nav className="sticky top-4 z-50 px-4 sm:px-6 lg:px-10">
@@ -58,17 +80,31 @@ export default function Navbar() {
             <div className="h-9 w-20 animate-pulse rounded-xl bg-white/10" />
           ) : user ? (
             /* Logged in */
-            <div className="flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-400/10 px-3 py-2">
+            <div className="flex items-center gap-2">
 
-              {/* User initial */}
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-400 text-xs font-bold text-slate-950">
-                {user.name?.charAt(0).toUpperCase()}
+              {/* User */}
+              <div className="flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-400/10 px-3 py-2">
+
+                {/* User initial */}
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-400 text-xs font-bold text-slate-950">
+                  {user.name?.charAt(0).toUpperCase()}
+                </div>
+
+                {/* User name */}
+                <span className="text-sm font-semibold text-white">
+                  {user.name}
+                </span>
+
               </div>
 
-              {/* User name */}
-              <span className="text-sm font-semibold text-white">
-                {user.name}
-              </span>
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm font-medium text-red-300 transition hover:border-red-400/30 hover:bg-red-400/20 hover:text-red-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4"
+              >
+                {loggingOut ? "Logging out..." : "Logout"}
+              </button>
 
             </div>
           ) : (
