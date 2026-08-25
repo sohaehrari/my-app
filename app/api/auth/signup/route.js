@@ -1,44 +1,12 @@
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-      maxlength: 50,
-    },
-
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-
-    password: {
-      type: String,
-      required: true,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-const User =
-  mongoose.models.User ||
-  mongoose.model("User", userSchema);
-
 async function connectDB() {
   if (!MONGODB_URI) {
-    throw new Error("MONGODB_URI is not configured.");
+    throw new Error("MONGODB_URI is missing from .env.local");
   }
 
   if (mongoose.connection.readyState === 1) {
@@ -52,11 +20,9 @@ export async function POST(request) {
   try {
     const body = await request.json();
 
-    const name = body.name?.trim();
-    const email = body.email?.trim().toLowerCase();
-    const password = body.password;
+    const { name, email, password } = body;
 
-    // Validate required fields
+    // Validate input
     if (!name || !email || !password) {
       return NextResponse.json(
         {
@@ -66,29 +32,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate name
-    if (name.length < 2) {
-      return NextResponse.json(
-        {
-          message: "Name must be at least 2 characters.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        {
-          message: "Please enter a valid email address.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate password
     if (password.length < 8) {
       return NextResponse.json(
         {
@@ -98,10 +41,18 @@ export async function POST(request) {
       );
     }
 
+    // Connect to MongoDB
     await connectDB();
 
+    // Use MongoDB collection directly
+    const db = mongoose.connection.db;
+
+    const users = db.collection("users");
+
     // Check existing user
-    const existingUser = await User.findOne({ email });
+    const existingUser = await users.findOne({
+      email: email.toLowerCase(),
+    });
 
     if (existingUser) {
       return NextResponse.json(
@@ -116,38 +67,27 @@ export async function POST(request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user
-    const user = await User.create({
-      name,
-      email,
+    const newUser = {
+      name: name.trim(),
+      email: email.toLowerCase(),
       password: hashedPassword,
-    });
+      createdAt: new Date(),
+    };
+
+    await users.insertOne(newUser);
 
     return NextResponse.json(
       {
         message: "Account created successfully.",
-        user: {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-        },
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("SIGNUP_ERROR:", error);
-
-    if (error?.code === 11000) {
-      return NextResponse.json(
-        {
-          message: "An account with this email already exists.",
-        },
-        { status: 409 }
-      );
-    }
+    console.error("SIGNUP SERVER ERROR:", error);
 
     return NextResponse.json(
       {
-        message: "Something went wrong. Please try again.",
+        message: "Server error. Unable to create account.",
       },
       { status: 500 }
     );
