@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { SignJWT } from "jose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const secret = new TextEncoder().encode(process.env.AUTH_SECRET);
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -70,7 +72,17 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json(
+    // Create JWT
+    const token = await new SignJWT({
+      userId: user._id.toString(),
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("7d")
+      .sign(secret);
+
+    // Create response
+    const response = NextResponse.json(
       {
         message: "Login successful.",
         user: {
@@ -81,6 +93,17 @@ export async function POST(request) {
       },
       { status: 200 }
     );
+
+    // Save JWT in HTTP-only cookie
+    response.cookies.set("auth-token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+
+    return response;
   } catch (error) {
     console.error("SIGNIN_ERROR:", error);
 
