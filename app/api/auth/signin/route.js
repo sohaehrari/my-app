@@ -4,7 +4,10 @@ import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
-const secret = new TextEncoder().encode(process.env.AUTH_SECRET);
+
+const secret = new TextEncoder().encode(
+  process.env.AUTH_SECRET
+);
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -85,16 +88,11 @@ export async function POST(request) {
     const response = NextResponse.json(
       {
         message: "Login successful.",
-        user: {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-        },
       },
       { status: 200 }
     );
 
-    // Save JWT in HTTP-only cookie
+    // Save JWT in cookie
     response.cookies.set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
