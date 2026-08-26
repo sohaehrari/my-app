@@ -4,6 +4,33 @@ import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+
+  password: {
+    type: String,
+    required: true,
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const User =
+  mongoose.models.User ||
+  mongoose.model("User", userSchema);
+
 async function connectDB() {
   if (!MONGODB_URI) {
     throw new Error("MONGODB_URI is missing from .env.local");
@@ -18,11 +45,8 @@ async function connectDB() {
 
 export async function POST(request) {
   try {
-    const body = await request.json();
+    const { name, email, password } = await request.json();
 
-    const { name, email, password } = body;
-
-    // Validate input
     if (!name || !email || !password) {
       return NextResponse.json(
         {
@@ -41,17 +65,13 @@ export async function POST(request) {
       );
     }
 
-    // Connect to MongoDB
     await connectDB();
 
-    // Use MongoDB collection directly
-    const db = mongoose.connection.db;
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = name.trim();
 
-    const users = db.collection("users");
-
-    // Check existing user
-    const existingUser = await users.findOne({
-      email: email.toLowerCase(),
+    const existingUser = await User.findOne({
+      email: cleanEmail,
     });
 
     if (existingUser) {
@@ -63,22 +83,22 @@ export async function POST(request) {
       );
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
-    const newUser = {
-      name: name.trim(),
-      email: email.toLowerCase(),
+    const user = await User.create({
+      name: cleanName,
+      email: cleanEmail,
       password: hashedPassword,
-      createdAt: new Date(),
-    };
-
-    await users.insertOne(newUser);
+    });
 
     return NextResponse.json(
       {
         message: "Account created successfully.",
+        user: {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+        },
       },
       { status: 201 }
     );

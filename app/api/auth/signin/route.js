@@ -32,6 +32,10 @@ const User =
   mongoose.model("User", userSchema);
 
 async function connectDB() {
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI is missing from .env.local");
+  }
+
   if (mongoose.connection.readyState === 1) {
     return;
   }
@@ -45,20 +49,30 @@ export async function POST(request) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { message: "Email and password are required." },
+        {
+          message: "Email and password are required.",
+        },
         { status: 400 }
       );
     }
 
+    if (!process.env.AUTH_SECRET) {
+      throw new Error("AUTH_SECRET is missing from .env.local");
+    }
+
     await connectDB();
 
+    const cleanEmail = email.trim().toLowerCase();
+
     const user = await User.findOne({
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
     });
 
     if (!user) {
       return NextResponse.json(
-        { message: "Invalid email or password." },
+        {
+          message: "Invalid email or password.",
+        },
         { status: 401 }
       );
     }
@@ -70,7 +84,9 @@ export async function POST(request) {
 
     if (!passwordMatch) {
       return NextResponse.json(
-        { message: "Invalid email or password." },
+        {
+          message: "Invalid email or password.",
+        },
         { status: 401 }
       );
     }
@@ -79,7 +95,9 @@ export async function POST(request) {
     const token = await new SignJWT({
       userId: user._id.toString(),
     })
-      .setProtectedHeader({ alg: "HS256" })
+      .setProtectedHeader({
+        alg: "HS256",
+      })
       .setIssuedAt()
       .setExpirationTime("7d")
       .sign(secret);
@@ -88,11 +106,16 @@ export async function POST(request) {
     const response = NextResponse.json(
       {
         message: "Login successful.",
+        user: {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+        },
       },
       { status: 200 }
     );
 
-    // Save JWT in cookie
+    // Save JWT in HTTP-only cookie
     response.cookies.set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -106,7 +129,9 @@ export async function POST(request) {
     console.error("SIGNIN_ERROR:", error);
 
     return NextResponse.json(
-      { message: "Server error. Please try again." },
+      {
+        message: "Server error. Please try again.",
+      },
       { status: 500 }
     );
   }
