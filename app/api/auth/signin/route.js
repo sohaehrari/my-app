@@ -14,7 +14,7 @@ const User =
   mongoose.model("User", userSchema);
 
 async function connectDB() {
-  if (mongoose.connection.readyState >= 1) {
+  if (mongoose.connection.readyState === 1) {
     return;
   }
 
@@ -33,34 +33,36 @@ export async function POST(request) {
 
     const { email, password } = await request.json();
 
-    if (!email || !password) {
+    if (!email?.trim() || !password) {
       return NextResponse.json(
-        { message: "Email and password are required" },
+        { message: "Email and password are required." },
         { status: 400 }
       );
     }
 
     await connectDB();
 
+    const cleanEmail = email.trim().toLowerCase();
+
     const user = await User.findOne({
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
     });
 
     if (!user) {
       return NextResponse.json(
-        { message: "Invalid email or password" },
+        { message: "Invalid email or password." },
         { status: 401 }
       );
     }
 
-    const passwordCorrect = await bcrypt.compare(
+    const passwordMatches = await bcrypt.compare(
       password,
       user.password
     );
 
-    if (!passwordCorrect) {
+    if (!passwordMatches) {
       return NextResponse.json(
-        { message: "Invalid email or password" },
+        { message: "Invalid email or password." },
         { status: 401 }
       );
     }
@@ -72,13 +74,16 @@ export async function POST(request) {
     const token = await new SignJWT({
       userId: user._id.toString(),
     })
-      .setProtectedHeader({ alg: "HS256" })
+      .setProtectedHeader({
+        alg: "HS256",
+      })
       .setIssuedAt()
       .setExpirationTime("7d")
       .sign(secret);
 
     const response = NextResponse.json({
-      message: "Signed in successfully",
+      success: true,
+      message: "Signed in successfully.",
       user: {
         id: user._id.toString(),
         name: user.name,
@@ -86,9 +91,7 @@ export async function POST(request) {
       },
     });
 
-    response.cookies.set({
-      name: "auth-token",
-      value: token,
+    response.cookies.set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -101,7 +104,13 @@ export async function POST(request) {
     console.error("SIGNIN_ERROR:", error);
 
     return NextResponse.json(
-      { message: "Unable to sign in" },
+      {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to sign in.",
+      },
       { status: 500 }
     );
   }
