@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -33,7 +33,7 @@ const User =
 
 async function connectDB() {
   if (!MONGODB_URI) {
-    throw new Error("MONGODB_URI is missing from .env.local");
+    throw new Error("MONGODB_URI is missing");
   }
 
   if (mongoose.connection.readyState === 1) {
@@ -67,8 +67,8 @@ export async function POST(request) {
 
     await connectDB();
 
-    const cleanEmail = email.trim().toLowerCase();
     const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
 
     const existingUser = await User.findOne({
       email: cleanEmail,
@@ -83,7 +83,10 @@ export async function POST(request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(
+      password,
+      12
+    );
 
     const user = await User.create({
       name: cleanName,
