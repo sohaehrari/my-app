@@ -3,28 +3,10 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-const secret = new TextEncoder().encode(
-  process.env.AUTH_SECRET
-);
-
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-
-  password: {
-    type: String,
-    required: true,
-  },
+  name: String,
+  email: String,
+  password: String,
 });
 
 const User =
@@ -32,96 +14,86 @@ const User =
   mongoose.model("User", userSchema);
 
 async function connectDB() {
-  if (!MONGODB_URI) {
-    throw new Error("MONGODB_URI is missing from .env.local");
-  }
-
-  if (mongoose.connection.readyState === 1) {
+  if (mongoose.connection.readyState >= 1) {
     return;
   }
 
-  await mongoose.connect(MONGODB_URI);
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI is missing");
+  }
+
+  await mongoose.connect(process.env.MONGODB_URI);
 }
 
 export async function POST(request) {
   try {
+    if (!process.env.AUTH_SECRET) {
+      throw new Error("AUTH_SECRET is missing");
+    }
+
     const { email, password } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
-        {
-          message: "Email and password are required.",
-        },
+        { message: "Email and password are required" },
         { status: 400 }
       );
     }
 
-    if (!process.env.AUTH_SECRET) {
-      throw new Error("AUTH_SECRET is missing from .env.local");
-    }
-
     await connectDB();
 
-    const cleanEmail = email.trim().toLowerCase();
-
     const user = await User.findOne({
-      email: cleanEmail,
+      email: email.trim().toLowerCase(),
     });
 
     if (!user) {
       return NextResponse.json(
-        {
-          message: "Invalid email or password.",
-        },
+        { message: "Invalid email or password" },
         { status: 401 }
       );
     }
 
-    const passwordMatch = await bcrypt.compare(
+    const passwordCorrect = await bcrypt.compare(
       password,
       user.password
     );
 
-    if (!passwordMatch) {
+    if (!passwordCorrect) {
       return NextResponse.json(
-        {
-          message: "Invalid email or password.",
-        },
+        { message: "Invalid email or password" },
         { status: 401 }
       );
     }
 
-    // Create JWT
+    const secret = new TextEncoder().encode(
+      process.env.AUTH_SECRET
+    );
+
     const token = await new SignJWT({
       userId: user._id.toString(),
     })
-      .setProtectedHeader({
-        alg: "HS256",
-      })
+      .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("7d")
       .sign(secret);
 
-    // Create response
-    const response = NextResponse.json(
-      {
-        message: "Login successful.",
-        user: {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-        },
+    const response = NextResponse.json({
+      message: "Signed in successfully",
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
       },
-      { status: 200 }
-    );
+    });
 
-    // Save JWT in HTTP-only cookie
-    response.cookies.set("auth-token", token, {
+    response.cookies.set({
+      name: "auth-token",
+      value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
       path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return response;
@@ -129,9 +101,7 @@ export async function POST(request) {
     console.error("SIGNIN_ERROR:", error);
 
     return NextResponse.json(
-      {
-        message: "Server error. Please try again.",
-      },
+      { message: "Unable to sign in" },
       { status: 500 }
     );
   }
