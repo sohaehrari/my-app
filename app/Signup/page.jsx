@@ -18,9 +18,14 @@ export default function SignUpPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    if (loading) return;
+
     setError("");
 
-    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanName || !cleanEmail || !password || !confirmPassword) {
       setError("Please fill in all fields.");
       return;
     }
@@ -42,25 +47,49 @@ export default function SignUpPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
+          name: cleanName,
+          email: cleanEmail,
           password,
         }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+
+      let data = null;
+
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+
+        console.error("Signup API returned non-JSON:", {
+          status: response.status,
+          statusText: response.statusText,
+          response: text,
+        });
+
+        throw new Error(
+          `Signup API returned ${response.status}. Check your API route.`
+        );
+      }
 
       if (!response.ok) {
-        setError(data.message || "Unable to create account.");
+        setError(data?.message || "Unable to create account.");
         return;
       }
 
       router.push("/signin");
-    } catch (error) {
-      console.error("SIGN UP ERROR:", error);
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      console.error("SIGN UP ERROR:", err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -69,10 +98,7 @@ export default function SignUpPage() {
   return (
     <main className="min-h-screen bg-[#070b14] px-4 py-12 text-white">
       <div className="mx-auto flex min-h-[80vh] max-w-md items-center justify-center">
-
         <div className="w-full rounded-3xl border border-white/10 bg-[#0b111e]/90 p-7 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-9">
-
-          {/* Logo */}
           <div className="mb-8 text-center">
             <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-3xl">
               ☁️
@@ -87,7 +113,6 @@ export default function SignUpPage() {
             </p>
           </div>
 
-          {/* Error */}
           {error && (
             <div className="mb-5 rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
               {error}
@@ -95,8 +120,6 @@ export default function SignUpPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-
-            {/* Name */}
             <div>
               <label
                 htmlFor="name"
@@ -112,11 +135,11 @@ export default function SignUpPage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
                 autoComplete="name"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/10"
+                disabled={loading}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/10 disabled:opacity-50"
               />
             </div>
 
-            {/* Email */}
             <div>
               <label
                 htmlFor="email"
@@ -132,11 +155,11 @@ export default function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 autoComplete="email"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/10"
+                disabled={loading}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/10 disabled:opacity-50"
               />
             </div>
 
-            {/* Password */}
             <div>
               <label
                 htmlFor="password"
@@ -152,11 +175,11 @@ export default function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 8 characters"
                 autoComplete="new-password"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/10"
+                disabled={loading}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/10 disabled:opacity-50"
               />
             </div>
 
-            {/* Confirm */}
             <div>
               <label
                 htmlFor="confirmPassword"
@@ -172,7 +195,8 @@ export default function SignUpPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repeat your password"
                 autoComplete="new-password"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/10"
+                disabled={loading}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/10 disabled:opacity-50"
               />
             </div>
 
@@ -183,7 +207,6 @@ export default function SignUpPage() {
             >
               {loading ? "Creating account..." : "Create Account"}
             </button>
-
           </form>
 
           <p className="mt-7 text-center text-sm text-slate-500">
@@ -204,7 +227,6 @@ export default function SignUpPage() {
               ← Back to Weather
             </Link>
           </div>
-
         </div>
       </div>
     </main>
