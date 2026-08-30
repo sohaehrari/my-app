@@ -5,7 +5,7 @@ Modern Weather Dashboard
 
  <img width="1814" height="816" alt="logout" src="https://github.com/user-attachments/assets/6ec1fd92-37fa-42ec-b1d1-9cd3efd90975" />
  
-<img width="1810" height="812" alt="Screenshot 2026-08-25 161613" src="https://github.com/user-attachments/assets/c083488a-a5ea-4cf7-b2e3-61597aacba67" />
+<img width="1842" height="891" alt="Screenshot 2026-08-21 131427" src="https://github.com/user-attachments/assets/cff2bfb6-e2eb-4b9b-bef8-4b2ac80c3ada" />
 
 Why Skyora
 Weather data shouldn't feel complicated.
