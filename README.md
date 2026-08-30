@@ -1,8 +1,12 @@
 ☁️ Skyora
 Modern Weather Dashboard
-<p align="center"> <strong>Weather, wherever you are.</strong> <br /> <sub> A modern weather experience for discovering real-time conditions, hourly forecasts, and daily outlooks — beautifully presented in one focused dashboard. </sub> </p> <p align="center"> <br /> <img src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white" /> <img src="https://img.shields.io/badge/React-19-111827?style=for-the-badge&logo=react&logoColor=61DAFB" /> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111827" /> <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" /> <img src="https://img.shields.io/badge/OpenWeatherMap-API-0B1120?style=for-the-badge" /> </p> <p align="center"> <a href="https://skyora-beta.vercel.app/"> <img src="https://img.shields.io/badge/EXPLORE%20SKYORA-38BDF8?style=for-the-badge&labelColor=0B1120" /> </a> &nbsp; <a href="https://github.com/sohaehrari/skyora"> <img src="https://img.shields.io/badge/VIEW%20SOURCE-1E293B?style=for-the-badge&labelColor=0B1120" /> </a> </p>
-✦ Preview
-<p align="center"> <img src="./public/preview.png" alt="Skyora Weather Dashboard" width="100%" /> </p> <p align="center"> <sub>Current conditions, forecasts, and weather insights — designed to be understood at a glance.</sub> </p>
+<p align="center"> <strong>Weather, wherever you are.</strong> <br /> <sub> A modern weather experience for discovering real-time conditions, hourly forecasts, and daily outlooks — beautifully presented in one focused dashboard. </sub> </p> <p align="center"> <br /> <img src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white" /> <img src="https://img.shields.io/badge/React-19-111827?style=for-the-badge&logo=react&logoColor=61DAFB" /> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111827" /> <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" /> <img src="https://img.shields.io/badge/OpenWeatherMap-API-0B1120?style=for-the-badge" /> </p> <p align="center"> <a href="https://skyora-beta.vercel.app/"> <img src="https://img.shields.io/badge/EXPLORE%20SKYORA-38BDF8?style=for-the-badge&labelColor=0B1120" /> </a> &nbsp; <a href="https://github.com/sohaehrari/skyora"> 
+<p align="center">  </p> <p align="center"> <sub>Current conditions, forecasts, and weather insights — designed to be understood at a glance.</sub> </p>
+
+ <img width="1814" height="816" alt="logout" src="https://github.com/user-attachments/assets/6ec1fd92-37fa-42ec-b1d1-9cd3efd90975" />
+ 
+<img width="1810" height="812" alt="Screenshot 2026-08-25 161613" src="https://github.com/user-attachments/assets/c083488a-a5ea-4cf7-b2e3-61597aacba67" />
+
 Why Skyora
 Weather data shouldn't feel complicated.
 
@@ -32,7 +36,7 @@ Clean dashboard layout — information is organized for quick scanning
 Soha Ehrari
 Frontend Developer
 
-GitHub · LinkedIn · [Portfolio — ADD YOUR URL]
+GitHub · LinkedIn · 
 
 <p align="center"> <br />
 <strong>☁️ SKYORA</strong>
