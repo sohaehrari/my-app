@@ -8,7 +8,6 @@ import CurrentWeather from "@/components/CurrentWeather";
 import HourlyForcast from "@/components/HourlyForcast";
 import DailyForcast from "@/components/DailyForcast";
 import WeatherDetails from "@/components/WeatherDetails";
-import WeatherBackground from "@/components/weatherBackground";
 
 export default function Home() {
   const [weather, setWeather] = useState(null);
@@ -25,7 +24,6 @@ export default function Home() {
 
       const encodedCity = encodeURIComponent(city.trim());
 
-      // CURRENT WEATHER
       const currentResponse = await fetch(
         `/api/weather?city=${encodedCity}`,
         {
@@ -42,7 +40,6 @@ export default function Home() {
         );
       }
 
-      // HOURLY + DAILY FORECAST
       const forecastResponse = await fetch(
         `/api/weather?city=${encodedCity}&type=forecast`,
         {
@@ -59,14 +56,11 @@ export default function Home() {
         );
       }
 
-      // COMBINE DATA
       const completeWeather = {
         ...currentData,
-
         hourly: Array.isArray(forecastData.hourly)
           ? forecastData.hourly
           : [],
-
         daily: Array.isArray(forecastData.daily)
           ? forecastData.daily
           : [],
@@ -81,8 +75,7 @@ export default function Home() {
       setWeather(null);
 
       setError(
-        err?.message ||
-          "Something went wrong. Please try again."
+        err?.message || "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);
@@ -90,39 +83,9 @@ export default function Home() {
   }
 
   return (
-    <main
-      className="
-        relative
-        min-h-screen
-        overflow-hidden
-        bg-[#070b14]
-        px-4
-        pb-8
-        pt-24
-        text-white
-        sm:px-6
-        lg:px-10
-        lg:pb-12
-        lg:pt-28
-      "
-    >
-
-      {/* ==========================================
-          WEATHER BACKGROUND ANIMATION
-      ========================================== */}
-
-      <WeatherBackground
-        condition={weather?.condition}
-        icon={weather?.icon}
-      />
-
-      {/* ==========================================
-          MAIN CONTENT
-      ========================================== */}
+    <main className="relative min-h-screen overflow-hidden bg-[#070b14] px-4 pb-8 pt-24 text-white sm:px-6 lg:px-10 lg:pb-12 lg:pt-28">
 
       <div className="relative z-10 mx-auto max-w-7xl">
-
-        {/* HERO HEADER */}
 
         <header className="mb-12 flex flex-col gap-8 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
@@ -168,13 +131,9 @@ export default function Home() {
           </div>
         </header>
 
-        {/* SEARCH */}
-
         <section className="mb-8">
           <SearchBar onSearch={handleSearch} />
         </section>
-
-        {/* LOADING */}
 
         {loading && (
           <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-10 text-center shadow-2xl shadow-black/20 sm:p-14">
@@ -189,8 +148,6 @@ export default function Home() {
             </p>
           </section>
         )}
-
-        {/* ERROR */}
 
         {!loading && error && (
           <section className="rounded-[2rem] border border-red-400/20 bg-red-400/[0.06] p-8 text-center shadow-xl shadow-black/10 sm:p-12">
@@ -211,8 +168,6 @@ export default function Home() {
             </p>
           </section>
         )}
-
-        {/* EMPTY STATE */}
 
         {!loading && !error && !weather && (
           <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] via-white/[0.03] to-white/[0.02] p-8 shadow-2xl shadow-black/20 sm:p-12 lg:p-16">
@@ -244,22 +199,7 @@ export default function Home() {
                     key={city}
                     type="button"
                     onClick={() => handleSearch(city)}
-                    className="
-                      rounded-full
-                      border
-                      border-white/10
-                      bg-white/[0.04]
-                      px-4
-                      py-2
-                      text-sm
-                      text-slate-300
-                      transition
-                      duration-200
-                      hover:border-cyan-300/30
-                      hover:bg-cyan-300/10
-                      hover:text-cyan-200
-                      active:scale-95
-                    "
+                    className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-slate-300 transition duration-200 hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-cyan-200 active:scale-95"
                   >
                     {city}
                   </button>
@@ -269,23 +209,14 @@ export default function Home() {
           </section>
         )}
 
-        {/* WEATHER RESULTS */}
-
         {!loading && !error && weather && (
           <section className="space-y-5">
-
             <CurrentWeather weather={weather} />
-
             <HourlyForcast hourly={weather.hourly} />
-
             <DailyForcast daily={weather.daily} />
-
             <WeatherDetails weather={weather} />
-
           </section>
         )}
-
-        {/* FOOTER */}
 
         <footer className="mt-12 border-t border-white/5 pt-6 text-center">
           <p className="text-xs text-slate-600">
