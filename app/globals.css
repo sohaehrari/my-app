@@ -1,36 +1,183 @@
 @import "tailwindcss";
 
+/* =========================================
+   ROOT
+========================================= */
+
 :root {
-  --foreground: #171717;
+  --foreground: #f8fafc;
+  --background: #070b14;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+
   color: var(--foreground);
+  background: var(--background);
+
   font-family: Arial, Helvetica, sans-serif;
+
+  overflow-x: hidden;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+/* Prevent ugly tap highlight on mobile */
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================
+   WEATHER RAIN
+========================================= */
+
 @keyframes weatherRain {
   0% {
     transform: translateY(-50px) rotate(15deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.8;
   }
 
   100% {
     transform: translateY(500px) rotate(15deg);
+    opacity: 0;
   }
 }
+
+/* =========================================
+   REALISTIC RAIN LEAK
+========================================= */
+
+@keyframes rainLeak {
+  0% {
+    transform: translateY(-40px) scaleY(0.35);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.7;
+  }
+
+  45% {
+    transform: translateY(120px) scaleY(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    opacity: 0.65;
+  }
+
+  100% {
+    transform: translateY(330px) scaleY(1.2);
+    opacity: 0;
+  }
+}
+
+/* =========================================
+   LARGE WATER DROPS
+========================================= */
+
+@keyframes rainWaterV5 {
+  0% {
+    transform: translateY(-10px) scaleY(0.4);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  45% {
+    transform: translateY(100px) scaleY(1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(280px) scaleY(1.3);
+    opacity: 0;
+  }
+}
+
+/* =========================================
+   SMALL RAIN DROPS
+========================================= */
+
+@keyframes smallRainV5 {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(280px);
+    opacity: 0;
+  }
+}
+
+/* =========================================
+   SNOW
+========================================= */
 
 @keyframes weatherSnow {
   0% {
     transform: translateY(-30px) translateX(0);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.9;
   }
 
   50% {
     transform: translateY(230px) translateX(25px);
+    opacity: 0.8;
   }
 
   100% {
     transform: translateY(500px) translateX(-20px);
+    opacity: 0;
   }
 }
+
+/* =========================================
+   SNOW PULSE
+========================================= */
+
+@keyframes snowPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   CLOUD FLOAT
+========================================= */
 
 @keyframes cloudFloat {
   0%,
@@ -54,18 +201,26 @@ body {
   }
 }
 
+/* =========================================
+   BASIC SUN GLOW
+========================================= */
+
 @keyframes sunGlow {
   0%,
   100% {
     transform: scale(1);
-    opacity: 0.75;
+    filter: brightness(1);
   }
 
   50% {
-    transform: scale(1.08);
-    opacity: 1;
+    transform: scale(1.06);
+    filter: brightness(1.15);
   }
 }
+
+/* =========================================
+   SUN ROTATION
+========================================= */
 
 @keyframes sunRotate {
   from {
@@ -77,51 +232,458 @@ body {
   }
 }
 
-@keyframes snowPulse {
+/* =========================================
+   REAL SUN ATMOSPHERE
+========================================= */
+
+@keyframes sunAtmosphere {
   0%,
   100% {
-    transform: scale(1);
-    opacity: 0.6;
+    transform: scale(0.95);
+    opacity: 0.5;
   }
 
   50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-}
-@keyframes rainWaterV5 {
-  0% {
-    transform: translateY(-10px) scaleY(0.4);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 1;
-  }
-
-  45% {
-    transform: translateY(100px) scaleY(1);
+    transform: scale(1.08);
     opacity: 0.9;
   }
+}
 
-  100% {
-    transform: translateY(280px) scaleY(1.3);
-    opacity: 0;
+/* =========================================
+   SOLAR SPIN
+========================================= */
+
+@keyframes solarSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@keyframes smallRainV5 {
-  0% {
-    transform: translateY(-20px);
-    opacity: 0;
+/* =========================================
+   REAL SUN PULSE
+========================================= */
+
+@keyframes realSunPulse {
+  0%,
+  100% {
+    transform: scale(0.98);
+    filter: brightness(1);
   }
 
-  15% {
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.18);
+  }
+}
+
+/* =========================================
+   SOLAR SURFACE
+========================================= */
+
+@keyframes solarSurface {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0) scale(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translateX(15px) translateY(-5px) scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+/* =========================================
+   SUN CORONA
+========================================= */
+
+@keyframes sunCorona {
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: scale(1.08);
     opacity: 0.8;
   }
+}
 
+/* =========================================
+   REALISTIC SUN
+========================================= */
+
+.sun-realistic {
+  position: absolute;
+
+  right: 60px;
+  top: 60px;
+
+  width: 150px;
+  height: 150px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #ffffff 0%,
+      #fffbd0 15%,
+      #ffe66d 42%,
+      #ffb300 72%,
+      #f97316 100%
+    );
+
+  box-shadow:
+    0 0 20px rgba(255, 240, 120, 0.9),
+    0 0 50px rgba(255, 190, 50, 0.65),
+    0 0 100px rgba(255, 150, 30, 0.4),
+    0 0 180px rgba(255, 120, 20, 0.2);
+
+  animation:
+    realisticSun 5s ease-in-out infinite;
+
+  overflow: visible;
+}
+
+/* =========================================
+   SUN CORONA
+========================================= */
+
+.sun-realistic::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -25px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 230, 100, 0.35) 0%,
+      rgba(255, 170, 40, 0.18) 40%,
+      rgba(255, 120, 20, 0.06) 65%,
+      transparent 75%
+    );
+
+  filter: blur(12px);
+
+  animation:
+    sunCorona 6s ease-in-out infinite;
+
+  pointer-events: none;
+}
+
+/* =========================================
+   SUN ATMOSPHERE
+========================================= */
+
+.sun-realistic::after {
+  content: "";
+
+  position: absolute;
+
+  inset: -70px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 210, 70, 0.16),
+      rgba(255, 150, 30, 0.08) 35%,
+      transparent 70%
+    );
+
+  filter: blur(30px);
+
+  z-index: -1;
+
+  pointer-events: none;
+}
+
+/* =========================================
+   REALISTIC SUN BODY ANIMATION
+========================================= */
+
+@keyframes realisticSun {
+  0%,
   100% {
-    transform: translateY(280px);
-    opacity: 0;
+    transform: scale(0.98);
+    filter: brightness(1);
+  }
+
+  50% {
+    transform: scale(1.04);
+    filter: brightness(1.15);
+  }
+}
+
+/* =========================================
+   SOLAR TEXTURE
+========================================= */
+
+.sun-texture {
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      ellipse at 25% 30%,
+      rgba(255, 255, 255, 0.55),
+      transparent 15%
+    ),
+    radial-gradient(
+      ellipse at 70% 25%,
+      rgba(255, 180, 20, 0.35),
+      transparent 18%
+    ),
+    radial-gradient(
+      ellipse at 40% 70%,
+      rgba(255, 120, 10, 0.25),
+      transparent 20%
+    ),
+    radial-gradient(
+      ellipse at 80% 65%,
+      rgba(255, 240, 100, 0.3),
+      transparent 15%
+    );
+
+  pointer-events: none;
+}
+
+/* =========================================
+   SOLAR FLARES
+========================================= */
+
+.sun-flare {
+  position: absolute;
+
+  width: 230px;
+  height: 230px;
+
+  border-radius: 50%;
+
+  border: 2px solid rgba(255, 210, 80, 0.12);
+
+  filter: blur(2px);
+
+  animation:
+    solarRotate 25s linear infinite;
+
+  pointer-events: none;
+}
+
+/* =========================================
+   GENERAL WEATHER TRANSITIONS
+========================================= */
+
+.weather-transition {
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    background-color 0.5s ease,
+    box-shadow 0.5s ease,
+    border-color 0.5s ease;
+}
+
+/* =========================================
+   WEATHER CARD
+========================================= */
+
+.weather-card {
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    background-color 0.35s ease;
+}
+
+/* =========================================
+   WEATHER CARD HOVER
+========================================= */
+
+@media (hover: hover) {
+  .weather-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* =========================================
+   BUTTON TRANSITIONS
+========================================= */
+
+button {
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 640px) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-size: 15px;
+  }
+
+  /* Smaller realistic sun */
+
+  .sun-realistic {
+    right: 25px;
+    top: 35px;
+
+    width: 110px;
+    height: 110px;
+  }
+
+  .sun-realistic::before {
+    inset: -18px;
+
+    filter: blur(9px);
+  }
+
+  .sun-realistic::after {
+    inset: -45px;
+
+    filter: blur(22px);
+  }
+
+  /* Smaller solar flare */
+
+  .sun-flare {
+    width: 170px;
+    height: 170px;
+  }
+
+  /* Reduce cloud movement on small screens */
+
+  .weather-card {
+    transform: none !important;
+  }
+}
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 400px) {
+  .sun-realistic {
+    right: 18px;
+    top: 25px;
+
+    width: 90px;
+    height: 90px;
+  }
+
+  .sun-realistic::before {
+    inset: -14px;
+  }
+
+  .sun-realistic::after {
+    inset: -35px;
+  }
+
+  .sun-flare {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .sun-realistic {
+    right: 40px;
+    top: 45px;
+
+    width: 130px;
+    height: 130px;
+  }
+
+  .sun-flare {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 1025px) {
+  .sun-realistic {
+    width: 150px;
+    height: 150px;
+  }
+
+  .weather-card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* =========================================
+   LARGE DESKTOP
+========================================= */
+
+@media (min-width: 1536px) {
+  .sun-realistic {
+    right: 70px;
+    top: 70px;
+
+    width: 170px;
+    height: 170px;
+  }
+
+  .sun-flare {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

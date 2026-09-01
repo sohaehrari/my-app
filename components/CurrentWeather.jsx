@@ -241,29 +241,69 @@ export default function CurrentWeather({ weather }) {
 
               {/* CLEAR */}
               {isClear && (
-                <div className="h-36 w-36 rounded-full bg-yellow-300 shadow-[0_0_100px_35px_rgba(253,224,71,0.25)] animate-[sunGlow_4s_ease-in-out_infinite]" />
-              )}
+  <>
+    {/* Deep atmospheric sunlight */}
+    <div className="absolute -right-48 -top-48 h-[700px] w-[700px] rounded-full bg-orange-500/[0.055] blur-[140px]" />
 
-              {/* ================= BOLD CLOUD ================= */}
+    <div className="absolute right-[-120px] top-[-120px] h-[520px] w-[520px] rounded-full bg-yellow-300/[0.07] blur-[110px]" />
 
-              {isCloudy && (
-                <div className="relative h-28 w-48">
+    {/* Large soft corona */}
+    <div className="absolute right-20 top-20 h-52 w-52 rounded-full bg-orange-300/10 blur-[45px] animate-[sunAtmosphere_7s_ease-in-out_infinite]" />
 
-                  {/* Glow */}
-                  <div className="absolute inset-0 rounded-full bg-slate-200/10 blur-2xl" />
+    {/* ================= SOLAR FLARES ================= */}
 
-                  {/* Main body */}
-                  <div className="absolute bottom-0 left-0 h-16 w-48 rounded-full bg-gradient-to-b from-slate-100/80 via-slate-200/70 to-slate-400/60 shadow-[0_10px_35px_rgba(226,232,240,0.25)]" />
+    <div className="absolute right-[105px] top-[55px] h-64 w-64 animate-[solarSpin_40s_linear_infinite]">
 
-                  {/* Cloud bumps */}
-                  <div className="absolute bottom-7 left-8 h-20 w-20 rounded-full bg-slate-100/85 shadow-[0_0_25px_rgba(226,232,240,0.2)]" />
+      <div className="absolute left-1/2 -top-10 h-28 w-3 -translate-x-1/2 rounded-full bg-gradient-to-t from-orange-300/0 via-yellow-200/50 to-white/0 blur-sm" />
 
-                  <div className="absolute bottom-10 left-16 h-24 w-24 rounded-full bg-slate-50/90 shadow-[0_0_30px_rgba(255,255,255,0.2)]" />
+      <div className="absolute -right-10 top-1/2 h-3 w-28 -translate-y-1/2 rounded-full bg-gradient-to-r from-yellow-200/0 via-orange-300/40 to-white/0 blur-sm" />
 
-                  <div className="absolute bottom-6 right-7 h-16 w-16 rounded-full bg-slate-200/80" />
+      <div className="absolute -bottom-10 left-1/2 h-28 w-3 -translate-x-1/2 rounded-full bg-gradient-to-b from-yellow-200/0 via-orange-300/40 to-white/0 blur-sm" />
 
-                </div>
-              )}
+      <div className="absolute -left-10 top-1/2 h-3 w-28 -translate-y-1/2 rounded-full bg-gradient-to-l from-yellow-200/0 via-orange-300/40 to-white/0 blur-sm" />
+
+    </div>
+
+    {/* ================= SUN ================= */}
+
+    <div className="absolute right-16 top-16 h-40 w-40">
+
+      {/* Outer glow */}
+      <div className="absolute -inset-12 rounded-full bg-orange-400/10 blur-3xl" />
+
+      {/* Hot corona */}
+      <div className="absolute -inset-5 rounded-full bg-gradient-to-br from-yellow-200/30 via-orange-400/20 to-red-500/10 blur-xl" />
+
+      {/* Sun */}
+      <div className="absolute inset-0 overflow-hidden rounded-full bg-gradient-to-br from-white via-[#fff4a3] via-45% to-[#f97316] shadow-[0_0_90px_30px_rgba(251,191,36,0.28)] animate-[realSunPulse_4s_ease-in-out_infinite]">
+
+        {/* Moving solar texture */}
+        <div className="absolute -left-8 top-8 h-7 w-28 rounded-full bg-orange-400/25 blur-md animate-[solarSurface_5s_ease-in-out_infinite]" />
+
+        <div className="absolute right-[-10px] top-16 h-9 w-24 rounded-full bg-yellow-100/35 blur-md animate-[solarSurface_6s_ease-in-out_infinite_reverse]" />
+
+        <div className="absolute left-10 bottom-10 h-6 w-20 rounded-full bg-orange-500/25 blur-md animate-[solarSurface_7s_ease-in-out_infinite]" />
+
+        <div className="absolute right-8 bottom-16 h-5 w-14 rounded-full bg-white/30 blur-md" />
+
+        {/* White-hot center */}
+        <div className="absolute left-8 top-7 h-14 w-10 rounded-full bg-white/55 blur-md" />
+
+        <div className="absolute left-12 top-10 h-5 w-5 rounded-full bg-white/80 blur-sm" />
+
+        {/* Tiny solar spots */}
+        <div className="absolute left-24 top-24 h-3 w-3 rounded-full bg-orange-500/25 blur-sm" />
+
+        <div className="absolute left-16 top-28 h-2 w-2 rounded-full bg-orange-600/20 blur-sm" />
+
+      </div>
+
+      {/* Final light bloom */}
+      <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-2xl" />
+
+    </div>
+  </>
+)}
 
               {/* ================= RAIN CLOUD + LEAK ================= */}
 
