@@ -8,6 +8,7 @@ import CurrentWeather from "@/components/CurrentWeather";
 import HourlyForcast from "@/components/HourlyForcast";
 import DailyForcast from "@/components/DailyForcast";
 import WeatherDetails from "@/components/WeatherDetails";
+import LocationWeather from "@/components/LocationWeather"
 
 export default function Home() {
   const [weather, setWeather] = useState(null);
@@ -83,6 +84,7 @@ export default function Home() {
   }
 
   return (
+
     <main className="relative min-h-screen overflow-hidden bg-[#070b14] px-4 pb-8 pt-24 text-white sm:px-6 lg:px-10 lg:pb-12 lg:pt-28">
 
       <div className="relative z-10 mx-auto max-w-7xl">
@@ -115,6 +117,7 @@ export default function Home() {
               forecasts in one beautiful dashboard.
             </p>
           </div>
+          <LocationWeather/>
 
           <div className="hidden min-w-[190px] rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 lg:block">
             <div className="flex items-center gap-2">

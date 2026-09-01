@@ -687,3 +687,414 @@ button:active {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+.weather-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: #ffffff;
+  box-shadow: 0 15px 45px rgba(15, 23, 42, 0.1);
+
+  animation: weatherCardIn 0.7s
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s ease,
+    border-color 0.3s ease;
+}
+
+.weather-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(245, 158, 11, 0.25);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15);
+}
+
+
+/* =========================================================
+   GOLD TOP LINE
+========================================================= */
+
+.weather-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 28px;
+  right: 28px;
+  height: 2px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #f59e0b,
+    #fbbf24,
+    #f59e0b,
+    transparent
+  );
+
+  background-size: 200% 100%;
+
+  animation: goldLine 4s linear infinite;
+}
+
+
+/* =========================================================
+   GOLD GLOW
+========================================================= */
+
+.weather-card::after {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  top: -75px;
+  right: -55px;
+
+  border-radius: 50%;
+  background: rgba(251, 191, 36, 0.16);
+  filter: blur(40px);
+
+  pointer-events: none;
+
+  transition:
+    transform 0.7s ease,
+    opacity 0.7s ease;
+}
+
+.weather-card:hover::after {
+  transform: scale(1.35);
+  opacity: 0.9;
+}
+
+
+/* =========================================================
+   LOCATION ICON
+========================================================= */
+
+.weather-location-icon {
+  transition:
+    transform 0.35s ease,
+    background-color 0.35s ease;
+}
+
+.weather-card:hover .weather-location-icon {
+  transform: scale(1.08);
+  background-color: #fef3c7;
+}
+
+
+/* =========================================================
+   LOCATION PIN
+========================================================= */
+
+.weather-pin {
+  transition:
+    transform 0.35s ease,
+    color 0.35s ease;
+}
+
+.weather-card:hover .weather-pin {
+  transform: translateY(-2px);
+  color: #d97706;
+}
+
+
+/* =========================================================
+   TEMPERATURE
+========================================================= */
+
+.weather-temperature {
+  animation: temperatureIn 0.8s 0.15s
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  transition:
+    color 0.35s ease,
+    transform 0.35s ease;
+}
+
+.weather-card:hover .weather-temperature {
+  transform: translateX(2px);
+}
+
+
+/* =========================================================
+   DEGREE SYMBOL
+========================================================= */
+
+.weather-degree {
+  transition:
+    transform 0.35s ease,
+    color 0.35s ease;
+}
+
+.weather-card:hover .weather-degree {
+  transform: translateY(-4px);
+  color: #d97706;
+}
+
+
+/* =========================================================
+   WEATHER ICON CONTAINER
+========================================================= */
+
+.weather-icon-box {
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.weather-card:hover .weather-icon-box {
+  transform: scale(1.08) rotate(2deg);
+  background-color: #fffbeb;
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.08);
+}
+
+
+/* =========================================================
+   WEATHER ICON
+========================================================= */
+
+.weather-icon {
+  animation: weatherFloat 4s
+    ease-in-out infinite;
+
+  transition:
+    transform 0.4s ease;
+}
+
+
+/* =========================================================
+   CONDITION TEXT
+========================================================= */
+
+.weather-condition {
+  animation: conditionIn 0.7s 0.3s
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+/* =========================================================
+   STAT ITEMS
+========================================================= */
+
+.weather-stat {
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.weather-stat:hover {
+  background-color: rgba(248, 250, 252, 0.9);
+  transform: translateY(-1px);
+}
+
+.weather-stat-icon {
+  transition:
+    transform 0.35s ease;
+}
+
+.weather-stat:hover .weather-stat-icon {
+  transform: scale(1.12);
+}
+
+
+/* =========================================================
+   REFRESH BUTTON
+========================================================= */
+
+.weather-refresh {
+  transition:
+    transform 0.35s ease,
+    color 0.25s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.weather-refresh:hover {
+  transform: rotate(-15deg);
+  color: #d97706;
+  background-color: #fffbeb;
+  border-color: #fde68a;
+}
+
+.weather-refresh:active {
+  transform: scale(0.88) rotate(-15deg);
+}
+
+
+/* =========================================================
+   LIVE DOT
+========================================================= */
+
+.weather-live-dot {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.weather-live-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.35);
+
+  animation: livePulse 2s
+    ease-out infinite;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.weather-loading {
+  animation: weatherCardIn 0.5s ease both;
+}
+
+.weather-loader {
+  animation: loaderSpin 1s linear infinite;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.weather-error {
+  animation: weatherCardIn 0.5s
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+/* =========================================================
+   KEYFRAMES
+========================================================= */
+
+@keyframes weatherCardIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+@keyframes temperatureIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+@keyframes conditionIn {
+  0% {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+@keyframes weatherFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+
+@keyframes goldLine {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+
+@keyframes livePulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.8;
+  }
+
+  70%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+
+@keyframes loaderSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 640px) {
+  .weather-card {
+    border-radius: 20px;
+  }
+
+  .weather-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-card,
+  .weather-temperature,
+  .weather-condition,
+  .weather-icon,
+  .weather-loading,
+  .weather-error,
+  .weather-loader,
+  .weather-live-dot::after,
+  .weather-card::before {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .weather-card:hover {
+    transform: none;
+  }
+}
