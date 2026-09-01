@@ -3,7 +3,7 @@
 import { useState } from "react";
 import "./globals.css";
 
-import SearchBar from "@/components/Searchbar";
+import SearchBar from "@/components/SearchBar";
 import CurrentWeather from "@/components/CurrentWeather";
 import HourlyForcast from "@/components/HourlyForcast";
 import DailyForcast from "@/components/DailyForcast";
